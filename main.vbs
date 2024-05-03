@@ -82,9 +82,12 @@ function convertName(name)
     elseif InStr(name, "CLOTH") > 0 Then
         str = convertCloth(name)
     else
-        str = convertUnknown(unmatchCount)
-        unmatchCount = unmatchCount + 1
+        ' str = convertUnknown(unmatchCount)
+        ' unmatchCount = unmatchCount + 1
+        str = Replace(name, ".png", "")
     end if
+
+    convertName = str & ".png"
 
     ' N00_000_00_Body_00_SKIN (Instance).png			->	BDSKN.png
     ' N00_000_00_EyeHighlight_00_EYE (Instance).png	->	EHL.png
@@ -113,7 +116,6 @@ end function
 For Each objFile In objFSO.GetFolder(strPath).Files
     ' File Name
     If strText <> "" Then ' is not first?
-        ' strText = strText & vbCrLf & objFile.Name
         ' strText = strText & vbCrLf & objFile.Name
         strText = strText & vbCrLf & convertName(objFile.Name)
     Else
