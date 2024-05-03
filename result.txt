@@ -1,7 +1,3 @@
-H_01.png => H_01.png
-H_010000000.png => H_010000000.png
-H_03 - Copy.png => H_03 - Copy.png
-H_03.png => H_03.png
 MatcapWarp.png => MatcapWarp.png
 N00_000_00_Body_00_SKIN (Instance).png => BDSKN_XXXXX.png
 N00_000_00_EyeHighlight_00_EYE (Instance).png => EHL_XXXXXXX.png
@@ -28,7 +24,6 @@ N00_007_01_Tops_01_CLOTH_01 (Instance).png => C_070101_XX.png
 N00_007_01_Tops_01_CLOTH_02 (Instance).png => C_070102_XX.png
 N00_008_01_Shoes_01_CLOTH (Instance).png => C_080100_XX.png
 Shader_NoneBlack.png => Shader_NoneBlack.png
-Top_01_C_01.png => Top_01_C_01.png
 _01.png => _01.png
 _02.png => _02.png
 _03.png => _03.png
