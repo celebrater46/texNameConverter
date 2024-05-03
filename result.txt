@@ -1,3 +1,7 @@
+H_01.png => H_01.png
+H_010000000.png => H_010000000.png
+H_03 - Copy.png => H_03 - Copy.png
+H_03.png => H_03.png
 MatcapWarp.png => MatcapWarp.png
 N00_000_00_Body_00_SKIN (Instance).png => BDSKN_XXXXX.png
 N00_000_00_EyeHighlight_00_EYE (Instance).png => EHL_XXXXXXX.png

@@ -1,27 +1,15 @@
-' https://step-learn.com/article/vbscript/059-file-nama-change.html
-
-' Dim strFilePath
-
-' ' type "J:\Dropbox\PC5_cloud\pg\VB\testVBS\test\test.txt"
-' strFilePath = inputbox("type the target file directory (includes the file name).", "INPUT BOX")
-' Set objFS = CreateObject("Scripting.FileSystemObject")
-' Set objFile = objFS.GetFile(strFilePath)
-
-' ' changing the file name
-' objFile.Name = "test-dagya.txt"
-
-
-
-
-
-Dim objFSO, objFile, objTextFile, strText, strPath, strProjectPath, unmatchCount, characters
+Dim objFSO
+Dim objFile
+Dim objTextFile
+Dim strText
+Dim strPath
+Dim strProjectPath
+Dim unmatchCount
+Dim characters
 unmatchCount = 0
 characters = 11 ' the length of the file name
 
-
-
 Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
-' strPath = inputbox("Input the target directory.", "INPUT BOX")
 strPath = objFSO.getParentFolderName(WScript.ScriptFullName) & "\files"
 strProjectPath = objFSO.getParentFolderName(WScript.ScriptFullName) & "\result.txt"
 Set objTextFile = objFSO.CreateTextFile(strProjectPath)
@@ -38,7 +26,6 @@ function convertCloth(name)
     Dim str, noNumberCloth
     noNumberCloth = 0
     ' N00_002_03_Tops_01_CLOTH_01 (Instance).png
-    ' str = Mid(name, 6, 5) ' 01_01
     str = Mid(name, 6, 2) & Mid(name, 9, 2) ' 0101
     if InStr(1, name, "CLOTH (", vbTextCompare) > 0 Then
         if noNumberCloth < 10 Then
@@ -88,11 +75,9 @@ function convertName(name)
     Dim str
 
     if Len(name) < 10 Then
-        ' str = Replace(name, ".png", "")
         convertName = name
         Exit function
     elseif InStr(1, name, "copy", vbTextCompare) > 0 Then
-        ' str = Replace(name, ".png", "")
         convertName = name
         Exit function
     elseif InStr(1, name, "Body_00_SKIN", vbTextCompare) > 0 Then
@@ -120,9 +105,6 @@ function convertName(name)
     elseif InStr(1, name, "CLOTH", vbTextCompare) > 0 Then
         str = convertCloth(name)
     else
-        ' str = convertUnknown(unmatchCount)
-        ' unmatchCount = unmatchCount + 1
-        ' str = Replace(name, ".png", "")
         convertName = name
         Exit function
     end if
@@ -154,36 +136,16 @@ function convertName(name)
     ' N00_008_01_Shoes_01_CLOTH (Instance).png		->	C_08_01.png
 end function
 
-' Set objFile = objFS.GetFile(strFilePath)
-
 For Each objFile In objFSO.GetFolder(strPath).Files
     ' File Name
     Dim converted, objFile2
-    ' Set objFile2 = objFSO.GetFile(objFile)
     converted = convertName(objFile.Name)
     
     objTextFile.WriteLine(objFile.Name & " => " & converted)
 
     If objFile.Name <> converted Then
         objFile.Name = converted
-    End If
-    ' objFile.Name = converted
-    ' objFile2.Name = converted
-
-    
-
-    If strText <> "" Then ' is not first?
-        ' strText = strText & vbCrLf & objFile.Name
-        ' strText = strText & vbCrLf & converted
-        ' objTextFile.WriteLine(strText)
-    Else
-        ' strText = objFile.Name ' is first
-        ' strText = converted ' is first
-        ' objTextFile.WriteLine(strText)
-    End If
-    
+    End If   
 Next
-
-' objTextFile.WriteLine(strText)
 
 Set objFSO = Nothing
