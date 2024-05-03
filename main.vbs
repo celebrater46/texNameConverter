@@ -14,28 +14,42 @@
 
 
 
-Dim objFSO, objFile, objTextFile, strText, strPath, strProjectPath, unmatchCount
+Dim objFSO, objFile, objTextFile, strText, strPath, strProjectPath, unmatchCount, characters
 unmatchCount = 0
+characters = 11 ' the length of the file name
 
 
 
 Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
 ' strPath = inputbox("Input the target directory.", "INPUT BOX")
 strPath = objFSO.getParentFolderName(WScript.ScriptFullName) & "\files"
-strProjectPath = objFSO.getParentFolderName(WScript.ScriptFullName) & "\files.txt"
+strProjectPath = objFSO.getParentFolderName(WScript.ScriptFullName) & "\result.txt"
 Set objTextFile = objFSO.CreateTextFile(strProjectPath)
 
 ' H_01
 function convertHair(name)
     Dim str
-    str = mid(name, 21, 3) ' _01
+    str = Mid(name, 21, 3) ' _01
     convertHair = "H" & str
 end function
 
-' C_01_01
+' C_010101
 function convertCloth(name)
-    Dim str
-    str = mid(name, 6, 5) ' 01_01
+    Dim str, noNumberCloth
+    noNumberCloth = 0
+    ' N00_002_03_Tops_01_CLOTH_01 (Instance).png
+    ' str = Mid(name, 6, 5) ' 01_01
+    str = Mid(name, 6, 2) & Mid(name, 9, 2) ' 0101
+    if InStr(1, name, "CLOTH (", vbTextCompare) > 0 Then
+        if noNumberCloth < 10 Then
+            str = str & "0" & noNumberCloth
+        else
+            str = str & noNumberCloth ' 010100
+        end if
+        noNumberCloth = noNumberCloth + 1
+    else
+        str = str & Mid(name, Len(name) - 16, 2) ' 010101
+    end if
     convertCloth = "C_" & str
 end function
 
@@ -51,42 +65,69 @@ function convertUnknown(num)
     elseif num < 1000 Then
         convertUnknown = str & num
     else
-        convertUnknown = str & left(str, 3)
+        convertUnknown = str & Left(str, 3)
+    end if
+end function
+
+function addX(name, max)
+    Dim length, x, xs, i
+    length = Len(name)
+    x = max - length
+
+    if x < 1 Then
+        addX = ""
+    else
+        for i = 2 to x
+            xs = xs + "X"
+        next
+    addX = "_" & xs
     end if
 end function
 
 function convertName(name)
     Dim str
-    if InStr(name, "Body_00_SKIN") > 0 Then
+
+    if Len(name) < 10 Then
+        ' str = Replace(name, ".png", "")
+        convertName = name
+        Exit function
+    elseif InStr(1, name, "copy", vbTextCompare) > 0 Then
+        ' str = Replace(name, ".png", "")
+        convertName = name
+        Exit function
+    elseif InStr(1, name, "Body_00_SKIN", vbTextCompare) > 0 Then
         str = "BDSKN"
-    elseif InStr(name, "EyeHighlight") > 0 Then
+    elseif InStr(1, name, "EyeHighlight", vbTextCompare) > 0 Then
         str = "EHL"
-    elseif InStr(name, "EyeIris") > 0 Then
+    elseif InStr(1, name, "EyeIris", vbTextCompare) > 0 Then
         str = "EI"
-    elseif InStr(name, "EyeWhite") > 0 Then
+    elseif InStr(1, name, "EyeWhite", vbTextCompare) > 0 Then
         str = "EW"
-    elseif InStr(name, "FaceBrow") > 0 Then
+    elseif InStr(1, name, "FaceBrow", vbTextCompare) > 0 Then
         str = "FB"
-    elseif InStr(name, "FaceEyelash") > 0 Then
+    elseif InStr(1, name, "FaceEyelash", vbTextCompare) > 0 Then
         str = "FELSH"
-    elseif InStr(name, "FaceEyeline") > 0 Then
+    elseif InStr(1, name, "FaceEyeline", vbTextCompare) > 0 Then
         str = "FEL"
-    elseif InStr(name, "FaceMouth") > 0 Then
+    elseif InStr(1, name, "FaceMouth", vbTextCompare) > 0 Then
         str = "FM"
-    elseif InStr(name, "Face_00_SKIN") > 0 Then
+    elseif InStr(1, name, "Face_00_SKIN", vbTextCompare) > 0 Then
         str = "FS"
-    elseif InStr(name, "HairBack") > 0 Then
+    elseif InStr(1, name, "HairBack", vbTextCompare) > 0 Then
         str = "HB"
-    elseif InStr(name, "HAIR_") > 0 Then
+    elseif InStr(1, name, "HAIR_", vbTextCompare) > 0 Then
         str = convertHair(name)
-    elseif InStr(name, "CLOTH") > 0 Then
+    elseif InStr(1, name, "CLOTH", vbTextCompare) > 0 Then
         str = convertCloth(name)
     else
         ' str = convertUnknown(unmatchCount)
         ' unmatchCount = unmatchCount + 1
-        str = Replace(name, ".png", "")
+        ' str = Replace(name, ".png", "")
+        convertName = name
+        Exit function
     end if
 
+    str = str & addX(str, characters) ' BDSKN_XXXXX
     convertName = str & ".png"
 
     ' N00_000_00_Body_00_SKIN (Instance).png			->	BDSKN.png
@@ -113,18 +154,36 @@ function convertName(name)
     ' N00_008_01_Shoes_01_CLOTH (Instance).png		->	C_08_01.png
 end function
 
+' Set objFile = objFS.GetFile(strFilePath)
+
 For Each objFile In objFSO.GetFolder(strPath).Files
     ' File Name
+    Dim converted, objFile2
+    ' Set objFile2 = objFSO.GetFile(objFile)
+    converted = convertName(objFile.Name)
+    
+    objTextFile.WriteLine(objFile.Name & " => " & converted)
+
+    If objFile.Name <> converted Then
+        objFile.Name = converted
+    End If
+    ' objFile.Name = converted
+    ' objFile2.Name = converted
+
+    
+
     If strText <> "" Then ' is not first?
         ' strText = strText & vbCrLf & objFile.Name
-        strText = strText & vbCrLf & convertName(objFile.Name)
+        ' strText = strText & vbCrLf & converted
+        ' objTextFile.WriteLine(strText)
     Else
         ' strText = objFile.Name ' is first
-        strText = convertName(objFile.Name) ' is first
+        ' strText = converted ' is first
+        ' objTextFile.WriteLine(strText)
     End If
     
 Next
 
-objTextFile.WriteLine(strText)
+' objTextFile.WriteLine(strText)
 
 Set objFSO = Nothing
